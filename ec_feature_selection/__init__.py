@@ -1,7 +1,7 @@
 import numpy as np
 from scipy.linalg import eigh
-from utils import check_array
-from _ecfs_functions import get_fisher_score, get_mutual_information, build_kernel, build_sigma
+from ec_feature_selection.utils import check_array
+from ec_feature_selection._ecfs_functions import get_fisher_score, get_mutual_information, build_kernel, build_sigma
 
 class ECFS():
     """
