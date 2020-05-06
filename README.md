@@ -6,13 +6,21 @@ Please check [the code](https://github.com/OhadVolk/ECFS/blob/master/ec_feature_
 
 ## Installation
 
-To install the code you can run the following:
+Windows users can run the following:
+
+```bash
+git clone https://github.com/OhadVolk/ECFS.git
+cd ECFS
+python setup.py install
+```
+Linux users can run the following:
 
 ```bash
 git clone https://github.com/OhadVolk/ECFS.git
 cd ECFS
 sudo python setup.py install
 ```
+
 
 ## Usage
 Check the [Example.ipynb](https://github.com/OhadVolk/ECFS/blob/master/Example.ipynb) notebook for a more details.
