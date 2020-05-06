@@ -132,7 +132,7 @@ class ECFS():
         
         self.ranking = np.abs(self.eigenvectors[:, self.eigenvalues.argmax()]).argsort()[::-1]
         
-        return self
+        
         
     def transform(self, X):
         """           
