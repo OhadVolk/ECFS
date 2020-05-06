@@ -1,7 +1,7 @@
 # Feature Ranking and Selection via Eigenvector Centrality
 
 ECFS is a Python implementation of the [Feature Ranking and Selection via Eigenvector Centrality](https://arxiv.org/abs/1704.05409) algorithm by Giorgio Roffo and Simone Melz.
-Please check [the code](https://github.com/OhadVolk/ECFS/blob/master/ec_feature_selection/ec_feature_selection.py) for full references.
+Please check [the code](https://github.com/OhadVolk/ECFS/blob/master/ec_feature_selection/__init__.py) for full references.
 
 
 ## Installation
