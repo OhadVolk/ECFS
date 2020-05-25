@@ -98,10 +98,10 @@ class ECFS():
             Loading coefficent.
             The adjacency matrix A is given by: A = (alpha * kernel) + (1 − alpha) * sigma
 
-        positive_class : int, float, or str (default 1)
+        positive_class : int, float, or str 
             Label of the positive class.
 
-        negative : int, float, or str (default -1)
+        negative : int, float, or str 
             Label of the negative class.
 
          Returns
@@ -118,8 +118,8 @@ class ECFS():
         self.negative_class = negative_class
         self.alpha = alpha
         
-        self.fisher_score = get_fisher_score(X=X, y=y, negative_class=self.positive_class,
-                                             positive_class=self.negative_class, epsilon=self.epsilon)
+        self.fisher_score = get_fisher_score(X=X, y=y, negative_class=self.negative_class,
+                                             positive_class=self.positive_class, epsilon=self.epsilon)
         
         self.mutual_information = np.apply_along_axis(get_mutual_information, 0, X, y, self.epsilon)
         
