@@ -23,7 +23,7 @@ sudo python setup.py install
 
 
 ## Usage
-Check the [Example.ipynb](https://github.com/OhadVolk/ECFS/blob/master/Example.ipynb) notebook for a more details.
+Check the [Example.ipynb](https://github.com/OhadVolk/ECFS/blob/master/Example.ipynb) notebook for more details.
 
 ```python
 from ec_feature_selection import ECFS
