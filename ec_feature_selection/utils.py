@@ -1,8 +1,13 @@
 import numpy as np
 import pandas as pd
+import scipy
 from scipy import sparse
+from typing import Union
 
-def check_array(arr):
+Data = Union[np.array, pd.DataFrame, pd.Series, scipy.sparse]
+
+
+def check_array(arr: Data) -> np.ndarray:
     """
     Utility function for checking and validating input arrays.
     """

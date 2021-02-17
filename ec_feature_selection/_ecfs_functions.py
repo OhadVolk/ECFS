@@ -1,8 +1,10 @@
 import numpy as np
-from scipy import sparse
 from sklearn.metrics import mutual_info_score
+from typing import Union
 
-def get_fisher_score(X, y, negative_class, positive_class, epsilon):
+
+def get_fisher_score(X: np.ndarray, y: np.ndarray, negative_class: Union[int, float, str],
+                     positive_class: Union[int, float, str], epsilon: Union[int, float] = 1e-5) -> np.ndarray:
     """
     Computes the Fisher score for the features.
 
@@ -26,13 +28,13 @@ def get_fisher_score(X, y, negative_class, positive_class, epsilon):
     y : array-like, shape (n_samples)
         Training labels.
         
-    positive_class : int, float, or str (default 1)
+    positive_class : int, float, or str
         Label of the positive class.
 
-    negative_class : int, float, or str (default -1)
+    negative_class : int, float, or str
         Label of the negative class.        
         
-    epsilon : int or float >=0 (default 1e-5)
+    epsilon : float >=0 (default 1e-5)
         A small number. Used for avoiding division by zero.        
 
     Returns
@@ -46,13 +48,14 @@ def get_fisher_score(X, y, negative_class, positive_class, epsilon):
     input_labels = set([negative_class, positive_class])
 
     if (y_labels != input_labels):
-        raise ValueError('Positive and negative class labels should match y labels. {} != {}'.format(y_labels, input_labels))
+        raise ValueError(
+            'Positive and negative class labels should match y labels. {} != {}'.format(y_labels, input_labels))
 
     if positive_class == negative_class:
         raise ValueError('Positive class label and negative class label can not be the same.')
 
-    positive_class = X[y==positive_class]
-    negative_class = X[y==negative_class]
+    positive_class = X[y == positive_class]
+    negative_class = X[y == negative_class]
 
     positive_mu = positive_class.mean(axis=0)
     negative_mu = negative_class.mean(axis=0)
@@ -63,11 +66,12 @@ def get_fisher_score(X, y, negative_class, positive_class, epsilon):
     negative_var = negative_class.var(axis=0)
     negative_var[negative_var == 0] = epsilon
 
-    fisher_score = (positive_mu - negative_mu) ** 2 / (positive_var + negative_var) 
+    fisher_score = (positive_mu - negative_mu) ** 2 / (positive_var + negative_var)
 
     return fisher_score
 
-def get_mutual_information(X, y, epsilon):
+
+def get_mutual_information(X: np.ndarray, y: np.ndarray, epsilon: float = 1e-5):
     """
     The Mutual Information is a measure of the similarity between two labels of
     the same data.
@@ -89,7 +93,7 @@ def get_mutual_information(X, y, epsilon):
     y : array-like, shape (n_samples,)
         Training labels.
         
-    epsilon : int or float >=0 (default 1e-5)
+    epsilon : float >=0 (default 1e-5)
         A small number. Used for avoiding division by zero.            
 
     Returns
@@ -102,10 +106,10 @@ def get_mutual_information(X, y, epsilon):
     n = X.shape[0]
 
     # Binning like FSLib
-    if(n/10 > 20):
+    if (n / 10 > 20):
         nbins = 20
     else:
-        nbins = max(n//10, 10)
+        nbins = max(n // 10, 10)
 
     pX = np.histogram(X, nbins)[0] / n
     pY = np.histogram(y, 2)[0] / n
@@ -117,10 +121,10 @@ def get_mutual_information(X, y, epsilon):
 
     mutual_information = (2 * score) / (HX + HY)
 
-    return mutual_information    
+    return mutual_information
 
 
-def mutual_information_score(X, y, nbins):
+def mutual_information_score(X: np.ndarray, y: np.ndarray, nbins: int) -> float:
     """
     Computes the Mutual Information score with the contingency table pf X and y.
 
@@ -146,7 +150,8 @@ def mutual_information_score(X, y, nbins):
 
     return score
 
-def entropy(p, epsilon):
+
+def entropy(p: np.ndarray, epsilon: float = 1e-5) -> float:
     """
     Computes the entropy of a distribution for given probability values.
 
@@ -157,7 +162,7 @@ def entropy(p, epsilon):
     p : array-like, 
         Probability values.
         
-    epsilon : int or float >=0 (default 1e-5)
+    epsilon : float >=0 (default 1e-5)
         A small number. Used for avoiding division by zero.        
         
     Returns
@@ -165,12 +170,13 @@ def entropy(p, epsilon):
     entropy: float 
         The entropy.
     """
-    p[p==0] = epsilon
+    p[p == 0] = epsilon
     entropy = -np.sum(p * np.log(p))
-    
+
     return entropy
 
-def normalize(matrix):
+
+def normalize(matrix: np.ndarray) -> np.ndarray:
     """
     Normalize a matrix in the the range 0 to 1.
 
@@ -190,7 +196,8 @@ def normalize(matrix):
 
     return normalized_matrix
 
-def build_kernel(fisher_score, mutual_information):
+
+def build_kernel(fisher_score: np.ndarray, mutual_information: np.ndarray) -> np.ndarray:
     """
     Building the kernel.
 
@@ -214,7 +221,8 @@ def build_kernel(fisher_score, mutual_information):
 
     return kernel
 
-def build_sigma(X):
+
+def build_sigma(X: np.ndarray) -> np.ndarray:
     """
     Building the matrix Sigma (Σ).
 
@@ -238,7 +246,7 @@ def build_sigma(X):
 
     for i, row in enumerate(sigma):
         row[row < std[i]] = std[i]
-        
-    sigma = normalize(sigma)    
+
+    sigma = normalize(sigma)
 
     return sigma

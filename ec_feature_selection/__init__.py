@@ -1,9 +1,15 @@
 import numpy as np
+import pandas as pd
+import scipy
 from scipy.linalg import eigh
 from ec_feature_selection.utils import check_array
 from ec_feature_selection._ecfs_functions import get_fisher_score, get_mutual_information, build_kernel, build_sigma
+from typing import Optional, Union
 
-class ECFS():
+Data = Union[np.array, pd.DataFrame, pd.Series, scipy.sparse]
+
+
+class ECFS:
     """
     Feature Ranking and Selection via Eigenvector Centrality is a graph-based 
     method for feature selection that ranks feature by identifying the most important ones.
@@ -44,7 +50,7 @@ class ECFS():
     n_features : int
         Number of features to select.
         
-    epsilon : int or float >=0 (default 1e-5)
+    epsilon : float >=0 (default 1e-5)
         A small number. Used for avoiding division by zero.
         
     alpha : int or float ∈ [0, 1]
@@ -75,14 +81,14 @@ class ECFS():
     ranking: numpy array (n_features,)
         Ranking of features (0 is the most important feature, 1 is 2nd most imporant etc... ).    
     """
-    
-    def __init__(self, n_features=None, epsilon=1e-5):
 
-        
+    def __init__(self, n_features: Optional[int] = None, epsilon: float = 1e-5) -> None:
+
         self.n_features = n_features
         self.epsilon = epsilon
-        
-    def fit(self, X, y, alpha, positive_class, negative_class): 
+
+    def fit(self, X: Data, y: Data, alpha: Union[int, float], positive_class: Union[int, float, str],
+            negative_class: Union[int, float, str]) -> None:
         """
         Computes the feature ranking from the training data.
         
@@ -101,7 +107,7 @@ class ECFS():
         positive_class : int, float, or str 
             Label of the positive class.
 
-        negative : int, float, or str 
+        negative_class : int, float, or str
             Label of the negative class.
 
          Returns
@@ -109,32 +115,31 @@ class ECFS():
         self : object
             Returns the instance itself.
         """
-        
+
         X = check_array(X)
         y = check_array(y)
-        assert X.shape[0] == y.shape[0], 'X and y should have the same number of samples. {} != {}'.format(X.shape[0], y.shape[0])
-        
+        assert X.shape[0] == y.shape[0], 'X and y should have the same number of samples. {} != {}'.format(X.shape[0],
+                                                                                                           y.shape[0])
+
         self.positive_class = positive_class
         self.negative_class = negative_class
         self.alpha = alpha
-        
+
         self.fisher_score = get_fisher_score(X=X, y=y, negative_class=self.negative_class,
                                              positive_class=self.positive_class, epsilon=self.epsilon)
-        
+
         self.mutual_information = np.apply_along_axis(get_mutual_information, 0, X, y, self.epsilon)
-        
+
         self.kernel = build_kernel(self.fisher_score, self.mutual_information)
         self.sigma = build_sigma(X)
-        
-        self.A =  self.alpha * self.kernel + (1-self.alpha) * self.sigma
-        
+
+        self.A = self.alpha * self.kernel + (1 - self.alpha) * self.sigma
+
         self.eigenvalues, self.eigenvectors = eigh(self.A)
-        
+
         self.ranking = np.abs(self.eigenvectors[:, self.eigenvalues.argmax()]).argsort()[::-1]
-        
-        
-        
-    def transform(self, X):
+
+    def transform(self, X: Data) -> np.ndarray:
         """           
         Reduces the feature set down to the top n_features.
         
@@ -150,15 +155,18 @@ class ECFS():
         """
         if self.n_features:
             if self.n_features > X.shape[1]:
-                raise ValueError('Number of features to select is higher than the original number of features. {} > {}'.format(self.n_features, X.shape[1]))
-        
+                raise ValueError(
+                    'Number of features to select is higher than the original number of features. {} > {}'.format(
+                        self.n_features, X.shape[1]))
+
         X_ranked = X[:, self.ranking]
-        
+
         if self.n_features is not None:
             X_ranked = X_ranked[:, :self.n_features]
         return X_ranked
-    
-    def fit_transform(self, X, y, alpha, positive_class=1, negative_class=-1):
+
+    def fit_transform(self, X: Data, y: Data, alpha: Union[int, float], positive_class: Union[int, float, str],
+                      negative_class: Union[int, float, str]) -> np.ndarray:
         """
         Computes the feature ranking from the training data, then reduces
         the feature set down to the top n_features.
@@ -176,10 +184,10 @@ class ECFS():
             Loading coefficent.
             The adjacency matrix A is given by: A = (alpha * kernel) + (1 − alpha) * sigma
 
-        positive_class : int, float, or str (default 1)
+        positive_class : int, float, or str
             Label of the positive class.
 
-        positive_class : int, float, or str (default -1)
+        positive_class : int, float, or str
             Label of the negative class.
             
         Returns
@@ -187,7 +195,7 @@ class ECFS():
         X_ranked: array-like (n_samples, n_top_features)
             Reduced feature matrix.
         """
-        
+
         self.fit(X, y, alpha, positive_class, negative_class)
-        
+
         return self.transform(X)
