@@ -1,10 +1,9 @@
 import numpy as np
 import pandas as pd
-import scipy
 from scipy import sparse
 from typing import Union
 
-Data = Union[np.array, pd.DataFrame, pd.Series, scipy.sparse]
+Data = Union[np.array, pd.DataFrame, pd.Series, sparse.spmatrix]
 
 
 def check_array(arr: Data) -> np.ndarray:
