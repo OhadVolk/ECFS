@@ -1,12 +1,12 @@
 import numpy as np
 import pandas as pd
-import scipy
+from scipy import sparse
 from scipy.linalg import eigh
 from ec_feature_selection.utils import check_array
 from ec_feature_selection._ecfs_functions import get_fisher_score, get_mutual_information, build_kernel, build_sigma
 from typing import Optional, Union
 
-Data = Union[np.array, pd.DataFrame, pd.Series, scipy.sparse]
+Data = Union[np.array, pd.DataFrame, pd.Series, sparse.spmatrix]
 
 
 class ECFS:
